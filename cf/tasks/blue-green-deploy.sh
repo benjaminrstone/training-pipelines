@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -e
 set -x
 
 version=`cat version/version`
@@ -11,7 +12,7 @@ green_app_route="${green_app_route//./_}"
 
 cf login -a $CF_API -u $CF_USER -p $CF_PWD -o $CF_ORG -s $CF_SPACE
 
-cf push $app_name -f app-source/${CF_MANIFEST} -p artifact/*.* -n $green_app_route
+cf push $app_name -f app-source/${CF_MANIFEST} -p /artifact/*.* -n $green_app_route
 
 cf map-route $app_name $CF_DOMAIN --hostname $CF_HOSTNAME
 
@@ -41,7 +42,7 @@ apps_url=`cf curl $routes_url | jq -r '.resources[].entity | select(.host=="'"$C
 echo "apps_url: shows the apps assigned to the hostname: ${apps_url}"
 
 # TO DO: Finish the jq parsing
-# Fetch the app names assigned to the hostname
+# Fetch the app name/s assigned to the hostname
 app_names=`(cf curl $apps_url | jq -r '...')`
 
 for name in $app_names; do
