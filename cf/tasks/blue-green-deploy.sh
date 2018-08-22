@@ -43,13 +43,13 @@ echo "apps_url: shows the apps assigned to the hostname: ${apps_url}"
 
 # TO DO: Finish the jq parsing
 # Fetch the app name/s assigned to the hostname
-app_names=`cf curl $apps_url | jq -r '.resources[].entity | .name'`
+app_names=`cf curl $apps_url | jq -r '.resources[].entity.name'`
 
 for name in $app_names; do
     if [ "$name" != "$app_name" ]
     then
       cf unmap-route $name $CF_DOMAIN --hostname $CF_HOSTNAME
-      cf delete $name -f
+      cf delete $name -f -r
       # TO DO: clean up blue
     fi
 done
